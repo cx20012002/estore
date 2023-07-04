@@ -1,10 +1,22 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Header from "./Header";
 import {Outlet} from "react-router-dom";
+import Footer from "./Footer";
+import {ToastContainer} from "react-toastify";
+import {useAppDispatch} from "../redux/store";
+import {basketApi} from "../redux/services/basketApi";
+import {getCookie} from "../../utils/scriptTools";
 
 function App() {
+    const dispatch = useAppDispatch();
+    const buyerId = getCookie('BuyerId');
+    useEffect(() => {
+        if (buyerId) dispatch(basketApi.endpoints.getBasket.initiate());
+    }, [dispatch, buyerId])
+
     return (
         <>
+            <ToastContainer theme={'colored'} position={'bottom-right'} hideProgressBar/>
             <Header/>
             <div className={"container mx-auto my-16 relative"}>
                 <div
@@ -33,6 +45,7 @@ function App() {
                     />
                 </div>
             </div>
+            <Footer/>
         </>
     );
 }

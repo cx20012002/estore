@@ -8,7 +8,7 @@ interface Props {
 
 function ProductList({products}: Props) {
     return (
-        <ul className={"grid xl:grid-cols-3 lg:grid-cols-2 gap-8"}>
+        <ul className={"grid xl:grid-cols-3 grid-cols-2 gap-8"}>
             {products.map((product: Product) => (
                 <li key={product.id} className={"rounded-xl overflow-hidden border"}>
                     <ProductCard product={product}/>

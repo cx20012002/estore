@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import 'react-toastify/dist/ReactToastify.css';
 import './app/layout/styles.css';
 import reportWebVitals from './reportWebVitals';
 import {Provider} from "react-redux";
@@ -12,7 +13,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
     <Provider store={store}>
-        <RouterProvider router={router} />
+        <RouterProvider router={router}/>
     </Provider>
 );
 
