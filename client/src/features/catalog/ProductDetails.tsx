@@ -1,5 +1,5 @@
-import React, { useState} from 'react';
-import { useParams} from "react-router-dom";
+import React, {useState} from 'react';
+import {useParams} from "react-router-dom";
 import {useGetProductQuery} from "../../app/redux/services/productsApi";
 import {RadioGroup} from "@headlessui/react";
 import {BiWorld} from "react-icons/bi";
@@ -13,16 +13,20 @@ import {colors, sizes} from "../../constants/content";
 function ProductDetails() {
     const {id} = useParams<{ id: string }>();
     const {data: product, isLoading} = useGetProductQuery(id as string);
-    const [colorSelected, setColorSelected] = useState(colors[0])
-    const [sizeSelected, setSizeSelected] = useState(sizes[0])
+    const [colorSelected, setColorSelected] = useState(colors[0]);
+    const [sizeSelected, setSizeSelected] = useState(sizes[0]);
+    const [quantity, setQuantity] = useState(1);
     const [addItem, {isLoading: addLoading}] = useAddItemsMutation();
-
+    
     if (isLoading) return <LoadingComponent logo={'/assets/logo.png'}/>;
     if (!product) return <div>No product</div>
-    
+
+    function handleInputChange(e: any) {
+        if (e.target.value > 0) setQuantity(parseInt(e.target.value));
+    }
+
     return (
         <section className={"flex flex-col lg:flex-row gap-20 bg-white px-10 py-20 shadow-lg rounded-lg"}>
-           
             <div className={"w-full overflow-hidden rounded-2xl"}>
                 <img src={product.pictureUrl} alt="Product Gallery" className={"h-full object-cover"}/>
             </div>
@@ -95,11 +99,13 @@ function ProductDetails() {
 
                 <div className={"space-y-5"}>
                     <label className={"block"} htmlFor="quantity">Quantity</label>
-                    <input type="number" name={"quantity"} id={"quantity"}
-                           className={"text-center py-2 rounded-lg border border-neutral-200 outline-none w-full"}
-                           defaultValue={1}/>
+                    <input
+                        type="number"
+                        onChange={handleInputChange}
+                        className={"text-center py-2 rounded-lg border border-neutral-200 outline-none w-full"}
+                        value={quantity}/>
                     <LoadingButton
-                        onClick={() => addItem({productId: product.id})}
+                        onClick={() => addItem({productId: product.id, quantity})}
                         isLoading={addLoading}
                         disabled={addLoading}
                         className={"bg-primary text-white h-12 rounded-lg w-full block disabled:opacity-50"}
@@ -107,9 +113,7 @@ function ProductDetails() {
                         Add to Cart
                     </LoadingButton>
                 </div>
-
             </div>
-
         </section>
     )
 }

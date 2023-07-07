@@ -8,6 +8,8 @@ import NotFoundPage from "../features/errors/NotFoundPage";
 import ServerErrorPage from "../features/errors/ServerErrorPage";
 import BasketPage from "../features/basket/BasketPage";
 import CheckoutPage from "../features/checkout/CheckoutPage";
+import AboutPage from "../features/about/AboutPage";
+import RequireAuth from "./RequireAuth";
 
 
 export const routes: RouteObject[] = [
@@ -15,15 +17,20 @@ export const routes: RouteObject[] = [
         path: '/',
         element: <App/>,
         children: [
+            {
+                element: <RequireAuth/>, children: [
+                    {path: 'checkout', element: <CheckoutPage/>}
+                ]
+            },
             {path: '/', element: <HomePage/>},
             {path: 'catalog', element: <Catalog/>},
             {path: 'catalog/:id', element: <ProductDetails/>},
             {path: 'basket', element: <BasketPage/>},
-            {path: 'checkout', element: <CheckoutPage/>},
+            {path: 'about', element: <AboutPage/>},
             {path: 'not-found', element: <NotFoundPage/>},
             {path: 'server-error', element: <ServerErrorPage/>},
             {path: 'errors', element: <ErrorsTest/>},
-            {path: '*', element: <Navigate to={'/not-found'}/>}
+            {path: '*', element: <Navigate to={'/not-found'}/>},
         ]
     }
 ]

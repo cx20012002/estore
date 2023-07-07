@@ -7,9 +7,14 @@ export const basketApi = baseApi.injectEndpoints({
         getBasket: build.query<Basket, void>({
             query: () => 'basket',
             onQueryStarted: async (args, {dispatch, queryFulfilled, requestId}) => {
-                const {data: basket} = await queryFulfilled;
-                dispatch(setBasket(basket));
-            }
+                try {
+                    const {data: basket} = await queryFulfilled;
+                    dispatch(setBasket(basket));
+                } catch (error) {
+                    console.log(error);
+                }
+            },
+            providesTags: ['Basket']
         }),
         addItems: build.mutation<Basket, { productId: number, quantity?: number }>({
             query: ({productId, quantity = 1}) => ({
@@ -19,10 +24,12 @@ export const basketApi = baseApi.injectEndpoints({
             }),
             onQueryStarted: async (args, {dispatch, queryFulfilled}) => {
                 const {data: basket} = await queryFulfilled;
-                await dispatch(basketApi.util.updateQueryData('getBasket', undefined, (draft) => {
-                    draft.items = basket.items;
-                }));
-                await dispatch(setBasket(basket));
+                if (basket){
+                    await dispatch(basketApi.util.updateQueryData('getBasket', undefined, (draft) => {
+                        draft.items = basket.items;
+                    }));
+                    await dispatch(setBasket(basket));
+                }
             },
         }),
         removeItems: build.mutation<Basket, { productId: number, quantity?: number }>({

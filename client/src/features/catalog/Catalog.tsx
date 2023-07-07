@@ -7,18 +7,10 @@ import {BiMinus, BiPlus} from "react-icons/bi";
 import {ProductParams} from "../../app/models/product";
 import {RxReset} from "react-icons/rx";
 import Pagination from "../../components/Pagination";
-import useBreadcrumbs from "use-react-router-breadcrumbs";
-import {Link} from "react-router-dom";
-
-const sortOptions = [
-    {value: 'name', label: 'Alphabetical'},
-    {value: 'priceDesc', label: 'Price - High to low'},
-    {value: 'priceAsc', label: 'Price - Low to high'},
-]
+import {sortOptions} from "../../constants/content";
 
 
 function Catalog() {
-    const breadcrumbs = useBreadcrumbs();
     const params: ProductParams = {
         orderBy: 'name',
         pageNumber: 1,
@@ -27,7 +19,6 @@ function Catalog() {
         brands: [],
         types: []
     }
-
     const getParams = (productParams: ProductParams): string => {
         const params = new URLSearchParams();
         params.append('pageNumber', productParams.pageNumber.toString());
@@ -43,7 +34,7 @@ function Catalog() {
     const [queryParams, setQueryParams] = useState<ProductParams>(params);
     const [searchValue, setSearchValue] = useState<string>('');
     const {data: response, isLoading, isFetching} = useGetProductsQuery(getParams(queryParams));
-
+    
     if (isLoading || filterLoading) return <LoadingComponent logo={'/assets/logo.png'}/>;
     if (!response) return <div>No products</div>
 
@@ -101,14 +92,9 @@ function Catalog() {
 
     return (
         <>
-            <section className={"mb-10"}>
+            <section className={"mb-20"}>
                 <img src={"/assets/shop_page_banner.png"} alt={"Shop Banner"}/>
             </section>
-            <div className={"w-full flex justify-end mb-10 divide-x-2"}>
-                {breadcrumbs.map(({ match, breadcrumb }, index) => (
-                    <Link key={index} to={match} className={"text-gray-500 text-sm px-3 hover:text-primary"}>{breadcrumb}</Link>
-                ))}
-            </div>
             <section className={"flex-row lg:flex gap-10"}>
                 <div className={"md:w-1/5"}>
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-10">

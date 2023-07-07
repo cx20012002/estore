@@ -21,7 +21,7 @@ public class BasketController : BaseApiController
     {
         var basket = await RetrieveBasket(GetBuyerId());
 
-        if (basket == null) return NotFound();
+        if (basket == null) return null;
 
         return basket.MapBasketToDto();
     }
@@ -70,7 +70,7 @@ public class BasketController : BaseApiController
 
     private string GetBuyerId()
     {
-        return User.Identity?.Name ?? Request.Cookies["BuyerId"];
+        return User.Identity?.Name ?? Request.Cookies["buyerId"];
     }
 
     private Basket CreateBasket()
@@ -80,7 +80,7 @@ public class BasketController : BaseApiController
         {
             buyerId = Guid.NewGuid().ToString();
             var cookieOptions = new CookieOptions { IsEssential = true, Expires = DateTime.Now.AddDays(30) };
-            Response.Cookies.Append("BuyerId", buyerId, cookieOptions);
+            Response.Cookies.Append("buyerId", buyerId, cookieOptions);
         }
 
         var basket = new Basket { BuyerId = buyerId };

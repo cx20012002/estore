@@ -1,11 +1,17 @@
 import {BaseQueryFn, createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react"
 import {toast} from "react-toastify";
 import {getRouter} from "../../../utils/scriptTools";
+import {RootState} from "../store";
 
 const baseQuery: BaseQueryFn = async (args, api, extraOptions) => {
     const response = await fetchBaseQuery({
         baseUrl: 'https://localhost:7174/api/',
-        credentials: 'include'
+        credentials: 'include',
+        prepareHeaders:(headers: Headers) =>{
+            const user = JSON.parse(localStorage.getItem('user') as string);
+            if (user) headers.set('Authorization', `Bearer ${user.token}`);
+            return headers;
+        }
     })(args, api, extraOptions);
 
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -30,7 +36,7 @@ const baseQuery: BaseQueryFn = async (args, api, extraOptions) => {
                 toast.error('Unauthorised');
                 break;
             case 404:
-                await getRouter().navigate('/not-found');
+                // await getRouter().navigate('/not-found');
                 break;
             case 500:
                 toast.error(error.data.title);

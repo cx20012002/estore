@@ -4,14 +4,20 @@ import {Outlet} from "react-router-dom";
 import Footer from "./Footer";
 import {ToastContainer} from "react-toastify";
 import {useAppDispatch} from "../redux/store";
-import {basketApi} from "../redux/services/basketApi";
 import {getCookie} from "../../utils/scriptTools";
+import {basketApi} from "../redux/services/basketApi";
+import {accountApi} from "../redux/services/accountApi";
 
 function App() {
     const dispatch = useAppDispatch();
-    const buyerId = getCookie('BuyerId');
+    const buyerId = getCookie('buyerId');
+    
     useEffect(() => {
-        if (buyerId) dispatch(basketApi.endpoints.getBasket.initiate());
+        if (getCookie('buyerId')) {
+            dispatch(basketApi.endpoints.getBasket.initiate());
+        } else if (localStorage.getItem('user')) {
+            dispatch(accountApi.endpoints.fetchCurrentUser.initiate())
+        }
     }, [dispatch, buyerId])
 
     return (

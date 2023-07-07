@@ -1,6 +1,18 @@
+export const navigation = [
+    {name: 'Catalog', href: 'catalog'},
+    {name: 'About', href: 'about'},
+    {name: 'Marketplace', href: '#'},
+    {name: 'Contact', href: '#'},
+    {name: 'Errors', href: 'errors'},
+]
+export const sortOptions = [
+    {value: 'name', label: 'Alphabetical'},
+    {value: 'priceDesc', label: 'Price - High to low'},
+    {value: 'priceAsc', label: 'Price - Low to high'},
+]
+
 export const colors = ['bg-[#7ABDB5]', 'bg-[#D7B2BB]', 'bg-[#E2C28F]'];
 export const sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
-
 export const footerLinks = [
     {
         title: {name: 'Product', link: '/catalog/product'},
@@ -36,11 +48,22 @@ export const footerLinks = [
         ]
     }
 ]
+export const categoryOptions = [
+    {text: 'Drinks', value: 'drinks'},
+    {text: 'Culture', value: 'culture'},
+    {text: 'Film', value: 'film'},
+    {text: 'Food', value: 'food'},
+    {text: 'Music', value: 'music'},
+    {text: 'Travel', value: 'travel'},
+]
 
 const content = {
+    navigation,
     colors,
     sizes,
-    footerLinks
+    footerLinks,
+    categoryOptions,
+    sortOptions
 }
 
 export default content;

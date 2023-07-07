@@ -12,9 +12,10 @@ function BasketPage() {
     const {data: basket, isLoading} = useGetBasketQuery();
     const [addItem, {isLoading: addLoading}] = useAddItemsMutation();
     const [removeItem, {isLoading: removeLoading}] = useRemoveItemsMutation();
+    
     if (isLoading) return <LoadingComponent logo={"/assets/logo.png"}/>;
     if (!basket) return <h1>no basket</h1>;
-
+    
     return (
         <div className={"bg-white px-10 py-20 rounded-xl shadow-lg relative"}>
             {(addLoading || removeLoading) && <LoadingComponent partial={true}/>}

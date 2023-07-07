@@ -5,14 +5,16 @@ import {Link} from "react-router-dom";
 
 interface Props {
     basket: Basket;
+    className?: string;
+    isBasket?: boolean;
 }
 
-function BasketSummary({basket}:Props) {
+function BasketSummary({basket, className, isBasket = true}: Props) {
     const subTotal = basket.items.reduce((sum: number, item: BasketItem) => (sum + item.price * item.quantity), 0) ?? 0;
     const deliveryFee = subTotal > 10000 ? 0 : 500;
-    
+
     return (
-        <div className={"w-full bg-[#F9FAFB] rounded-lg p-10 text-lg"}>
+        <div className={`w-full bg-[#F9FAFB] rounded-lg p-10 text-lg ${className}`}>
             Order Summery
             <table className="w-full text-sm text-left text-gray-500 mb-2">
                 <tbody>
@@ -49,12 +51,13 @@ function BasketSummary({basket}:Props) {
                         Order Total
                     </th>
                     <td className="py-4 text-right">
-                        {currencyFormat(subTotal+ deliveryFee)}
+                        {currencyFormat(subTotal + deliveryFee)}
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <Link to={"/checkout"} className={"bg-primary block text-center text-base text-white w-full py-3 rounded"}>Checkout</Link>
+            {isBasket && <Link to={"/checkout"}
+                               className={"bg-primary block text-center text-base text-white w-full py-3 rounded"}>Checkout</Link>}
         </div>
     )
 }

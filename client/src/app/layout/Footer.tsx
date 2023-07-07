@@ -28,7 +28,7 @@ function Footer() {
                     <h3 className={"text-sm font-semibold mb-2"}>Sign up for our newsletter</h3>
                     <p className={"text-sm text-gray-500"}>The latest deals and savings, sent to your inbox weekly.</p>
                     <form className={"flex gap-5"}>
-                        <input type="text" className={"border border-gray-300 rounded-md px-3 py-2 w-full mt-3 outline-none"} placeholder={"Enter your email address"}/>
+                        <input type="text" className={"border border-gray-300 rounded-md px-3 py-2 w-full mt-3 outline-none text-sm placeholder:text-neutral-400"} placeholder={"Enter your email address"}/>
                         <button className={"bg-primary text-white rounded-md px-3 py-2 mt-3 w-40"}>Sign up</button>
                     </form>
                 </div>
