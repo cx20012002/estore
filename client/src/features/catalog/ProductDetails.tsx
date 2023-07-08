@@ -54,12 +54,12 @@ function ProductDetails() {
 
                 <RadioGroup value={sizeSelected} onChange={setSizeSelected}>
                     <RadioGroup.Label className={"inline-block my-2"}>Size</RadioGroup.Label>
-                    <div className="flex gap-5 justify-between">
+                    <div className="flex gap-5 justify-start sm:justify-between sm:flex-nowrap flex-wrap">
                         {sizes.map((size) => (
                             <RadioGroup.Option
                                 key={size}
                                 value={size}
-                                className={({active, checked}) => `p-3 w-full rounded-lg cursor-pointer border border-gray-200 text-center
+                                className={({active, checked}) => `p-3 sm:w-full w-1/5 rounded-lg cursor-pointer border border-gray-200 text-center
                                 ${checked ? 'bg-primary text-white' : ''}
                                 `}
                             >

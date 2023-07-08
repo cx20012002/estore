@@ -24,7 +24,7 @@ function App() {
         <>
             <ToastContainer theme={'colored'} position={'bottom-right'} hideProgressBar/>
             <Header/>
-            <div className={"container mx-auto my-16 relative"}>
+            <div className={"container mx-auto my-16 relative sm:px-0 px-5"}>
                 <div
                     className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
                     aria-hidden="true"

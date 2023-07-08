@@ -35,7 +35,7 @@ function Header() {
     return (
         <header className="w-full border-b z-50">
             <AccountModal closeModal={closeModal} setIsOpen={setIsOpen} firstFocus={firstFocus} isOpen={isOpen}/>
-            <nav className="flex items-center justify-between py-6 container mx-auto">
+            <nav className="flex items-center justify-between py-6 container mx-auto sm:px-0 px-5">
                 <div className="flex lg:flex-1">
                     <Link to={"/"}>
                         <img

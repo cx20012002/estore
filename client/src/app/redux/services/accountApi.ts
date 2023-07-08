@@ -63,6 +63,7 @@ export const accountApi = baseApi.injectEndpoints({
         }),
         fetchAddress: builder.query<ShippingAddress, void>({
             query: () => 'account/savedAddress',
+            keepUnusedDataFor: 1,
         }),
     })
 })

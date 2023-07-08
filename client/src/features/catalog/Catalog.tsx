@@ -96,7 +96,7 @@ function Catalog() {
                 <img src={"/assets/shop_page_banner.png"} alt={"Shop Banner"}/>
             </section>
             <section className={"flex-row lg:flex gap-10"}>
-                <div className={"md:w-1/5"}>
+                <div className={"lg:w-1/5 w-full lg:mb-0 mb-10"}>
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-10">
                         Shop Filters
                     </h1>
