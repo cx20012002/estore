@@ -1,15 +1,13 @@
 import React from 'react';
 import {Navigate, Outlet, useLocation} from "react-router-dom";
-import {useAppDispatch} from "../app/redux/store";
-import {setTriggerModal} from "../app/redux/persistSlice";
+import {toast} from "react-toastify";
 
 function RequireAuth() {
     const user = localStorage.getItem('user');
     const location = useLocation();
-    const dispatch = useAppDispatch();
     
     if (!user) {
-        dispatch(setTriggerModal(true));
+        toast.error('You must be logged in to view checkout');
         return <Navigate to='/' state={{from: location}}/>
     }
 

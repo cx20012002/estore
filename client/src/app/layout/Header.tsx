@@ -29,8 +29,8 @@ function Header() {
         setIsOpen({source, open: false})
     };
 
-    useEffect(() => {
-    }, [user]);
+    // useEffect(() => {
+    // }, [user]);
 
     return (
         <header className="w-full border-b z-50">
@@ -129,9 +129,9 @@ function Header() {
                                                 size={18}/>My Profiles</Link>
                                         </Menu.Item>
                                         <Menu.Item>
-                                            <Link to={"/account-settings"}
+                                            <Link to={"/order"}
                                                   className={"flex items-center gap-2 p-2 rounded hover:text-primary hover:bg-neutral-50"}><CiSettings
-                                                size={18}/>Account settings</Link>
+                                                size={18}/>My Orders</Link>
                                         </Menu.Item>
                                         <Menu.Item>
                                             <button onClick={logout}

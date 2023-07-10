@@ -6,6 +6,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+## Bugs
+The basket is null after purchase, this cause error when adding a new item after placing order,
+but it works fine when you refresh the page. it's global persistent state issue, REMEMBER TO FIX.
+
 ### `npm start`
 
 Runs the app in the development mode.\
@@ -44,3 +48,4 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+

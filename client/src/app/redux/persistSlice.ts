@@ -5,13 +5,11 @@ import {User} from "../models/user";
 interface PersistState {
     basket: Basket | null;
     user: User | null;
-    triggerModal: boolean;
 }
 
 const initialState: PersistState = {
-    basket: null,
+    basket: new Basket(),
     user: null,
-    triggerModal: false
 }
 
 
@@ -24,11 +22,8 @@ export const persistSlice = createSlice({
         },
         setUser: (state, action) => {
             state.user = action.payload;
-        },
-        setTriggerModal: (state, action) => {
-            state.triggerModal = action.payload;
         }
     }
 });
 
-export const {setBasket, setUser, setTriggerModal} = persistSlice.actions;
+export const {setBasket, setUser} = persistSlice.actions;

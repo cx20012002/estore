@@ -46,6 +46,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<StoreContext>(x =>
     x.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<PaymentService>();
 builder.Services.AddIdentityCore<User>(opt => { opt.User.RequireUniqueEmail = true; })
     .AddRoles<Role>()
     .AddEntityFrameworkStores<StoreContext>();

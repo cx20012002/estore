@@ -1,7 +1,6 @@
 import {BaseQueryFn, createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react"
 import {toast} from "react-toastify";
 import {getRouter} from "../../../utils/scriptTools";
-import {RootState} from "../store";
 
 const baseQuery: BaseQueryFn = async (args, api, extraOptions) => {
     const response = await fetchBaseQuery({

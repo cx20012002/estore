@@ -7,9 +7,11 @@ import ErrorsTest from "../features/errors/ErrorsTest";
 import NotFoundPage from "../features/errors/NotFoundPage";
 import ServerErrorPage from "../features/errors/ServerErrorPage";
 import BasketPage from "../features/basket/BasketPage";
-import CheckoutPage from "../features/checkout/CheckoutPage";
 import AboutPage from "../features/about/AboutPage";
 import RequireAuth from "./RequireAuth";
+import CheckoutWrapper from "../features/checkout/CheckoutWrapper";
+import ThankYouPage from "../features/checkout/ThankYouPage";
+import Order from "../features/Order/Order";
 
 
 export const routes: RouteObject[] = [
@@ -19,7 +21,8 @@ export const routes: RouteObject[] = [
         children: [
             {
                 element: <RequireAuth/>, children: [
-                    {path: 'checkout', element: <CheckoutPage/>}
+                    {path: 'checkout', element: <CheckoutWrapper/>},
+                    {path: 'order', element: <Order/>},
                 ]
             },
             {path: '/', element: <HomePage/>},
@@ -27,6 +30,7 @@ export const routes: RouteObject[] = [
             {path: 'catalog/:id', element: <ProductDetails/>},
             {path: 'basket', element: <BasketPage/>},
             {path: 'about', element: <AboutPage/>},
+            {path: 'thank-you', element: <ThankYouPage/>},
             {path: 'not-found', element: <NotFoundPage/>},
             {path: 'server-error', element: <ServerErrorPage/>},
             {path: 'errors', element: <ErrorsTest/>},

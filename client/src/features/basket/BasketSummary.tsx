@@ -2,6 +2,7 @@ import React from 'react';
 import {Basket, BasketItem} from "../../app/models/basket";
 import {currencyFormat} from "../../utils/scriptTools";
 import {Link} from "react-router-dom";
+import {useAppSelector} from "../../app/redux/store";
 
 interface Props {
     basket: Basket;
@@ -56,8 +57,7 @@ function BasketSummary({basket, className, isBasket = true}: Props) {
                 </tr>
                 </tbody>
             </table>
-            {isBasket && <Link to={"/checkout"}
-                               className={"bg-primary block text-center text-base text-white w-full py-3 rounded"}>Checkout</Link>}
+            {isBasket && <Link to={"/checkout"} className={"bg-primary block text-center text-base text-white w-full py-3 rounded"}>Checkout</Link>}
         </div>
     )
 }

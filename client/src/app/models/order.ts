@@ -18,7 +18,7 @@ export interface OrderItem {
 
 export interface Order {
     id: number;
-    buyerEmail: string;
+    buyerId: string;
     orderDate: string;
     shippingAddress: ShippingAddress;
     deliveryFee: number;

@@ -15,9 +15,11 @@ import AppRadioInput from "../../components/AppRadioInput";
 import {useFetchAddressQuery} from "../../app/redux/services/accountApi";
 import {useCreateOrderMutation} from "../../app/redux/services/OrderApi";
 import AppCheckbox from "../../components/AppCheckbox";
-import {useAppDispatch} from "../../app/redux/store";
-import {setBasket} from "../../app/redux/persistSlice";
 import LoadingButton from "../../components/LoadingButton";
+import {StripeElementType} from "@stripe/stripe-js";
+import {StripeInput} from "../../components/StripeInput";
+import {CardCvcElement, CardExpiryElement, CardNumberElement, useElements, useStripe} from "@stripe/react-stripe-js";
+
 
 const inputStyle = "border border-neutral-200 w-full px-5 py-3 rounded outline-none";
 const paymentOptions = [
@@ -26,14 +28,30 @@ const paymentOptions = [
     {name: 'Online Transfer', value: 'onlineTransfer'}
 ]
 
-
 function CheckoutPage() {
+    const stripe = useStripe();
+    const elements = useElements();
     const navigate = useNavigate();
     const {data: basket, isLoading} = useGetBasketQuery();
     const {data: address} = useFetchAddressQuery();
-    const [createOrder, {isLoading: isCreateOrderLoading}] = useCreateOrderMutation();
-    
+    const [createOrder] = useCreateOrderMutation();
+    const [cardState, setCardState] = useState<{
+        elementError: { [key in StripeElementType]?: string }
+    }>({elementError: {}});
+    const [cardComplete, setCardComplete] = useState<any>({cardNumber: false, cardExpiry: false, cardCvc: false});
     const [shippingMethod, setShippingMethod] = useState('5');
+    const [loading, setLoading] = useState(false);
+
+    function onCardInputChange(event: any) {
+        setCardState({
+            ...cardState,
+            elementError: {
+                ...cardState.elementError,
+                [event.elementType]: event.error?.message
+            }
+        })
+        setCardComplete({...cardComplete, [event.elementType]: event.complete});
+    }
 
     const validationSchema = yup.object({
         fullName: yup.string().required(),
@@ -43,17 +61,43 @@ function CheckoutPage() {
         country: yup.string().required()
     } as FieldValues);
 
-    const {control, handleSubmit, reset, formState:{isValid, isDirty}} = useForm({
+    const {control, handleSubmit, reset, formState: {isValid, isDirty}} = useForm({
         resolver: yupResolver(validationSchema),
         mode: "all"
     });
     
-    const onSubmit = async (data: FieldValues) => {
-        const {nameOnCard, saveAddress, ...shippingAddress} = data;
-        await createOrder({saveAddress, shippingAddress});
-        await navigate('/');
-    }
     
+    const onSubmit = async (data: FieldValues) => {
+        setLoading(true);
+        const {nameOnCard} = data;
+        if (!stripe || !elements) return;
+        const cardElement = elements.getElement(CardNumberElement);
+        const paymentResult = await stripe.confirmCardPayment(basket?.clientSecret!, {
+            payment_method: {
+                card: cardElement!,
+                billing_details: {
+                    name: nameOnCard,
+                }
+            }
+        });
+
+        if (paymentResult.paymentIntent?.status === 'succeeded') {
+            const {nameOnCard, saveAddress, ...shippingAddress} = data;
+            const orderNumber = await createOrder({saveAddress, shippingAddress});
+            setLoading(false);
+            navigate('/thank-you', {state: {orderNumber: orderNumber}});
+        } else {
+            setLoading(false);
+        }
+    }
+
+    const submitDisabled = () => {
+        return !cardComplete.cardNumber
+            || !cardComplete.cardExpiry
+            || !cardComplete.cardCvc
+            || !isValid;
+    }
+
     useEffect(() => {
         if (address) {
             reset(address);
@@ -61,10 +105,11 @@ function CheckoutPage() {
     }, [address, reset])
 
     if (isLoading) return <LoadingComponent/>;
-    
-    
+
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className={"flex flex-col lg:flex-row bg-white shadow-lg rounded-lg overflow-hidden"}>
+
+        <form onSubmit={handleSubmit(onSubmit)}
+              className={"flex flex-col lg:flex-row bg-white shadow-lg rounded-lg overflow-hidden"}>
             <div className={"w-full flex flex-col text-sm gap-5 sm:px-16 px-10 py-20"}>
                 <h1 className={"text-4xl font-bold"}>Checkout Form</h1>
                 <hr className={"my-3"}/>
@@ -81,18 +126,22 @@ function CheckoutPage() {
                         <AppTextInput control={control} name={"zip"} label={"Zip"} className={inputStyle}/>
                         <AppTextInput control={control} name={"country"} label={"Country"} className={inputStyle}/>
                     </div>
-                    <AppCheckbox name={"saveAddress"} control={control} label={"Save this information for next time"} disabled={!isDirty}/>
+                    <AppCheckbox name={"saveAddress"} control={control} label={"Save this information for next time"}
+                                 disabled={!isDirty}/>
                 </div>
                 <hr className={"my-3"}/>
                 <h2 className={"text-base text-neutral-800"}>Delivery Method</h2>
-                <RadioGroup value={shippingMethod} onChange={setShippingMethod} className={"flex justify-between gap-4"}>
+                <RadioGroup value={shippingMethod} onChange={setShippingMethod}
+                            className={"flex justify-between gap-4"}>
                     <RadioGroup.Option value="5" className={"w-full cursor-pointer"}>
                         {({checked}) => (
-                            <div className={`w-full relative p-5 flex flex-col gap-5 rounded-lg border border-neutral-200 ${checked ? 'outline outline-2 outline-primary' : ''}`}>
+                            <div
+                                className={`w-full relative p-5 flex flex-col gap-5 rounded-lg border border-neutral-200 ${checked ? 'outline outline-2 outline-primary' : ''}`}>
                                 <div className={"relative"}>
                                     <h3 className={"font-bold mb-1"}>Standard</h3>
                                     <p className={"text-neutral-600"}>4–10 business days</p>
-                                    {checked && <TiTick size={18} className={"absolute top-0 right-0 text-white bg-primary rounded-full p-0.5"}/>}
+                                    {checked && <TiTick size={18}
+                                                        className={"absolute top-0 right-0 text-white bg-primary rounded-full p-0.5"}/>}
                                 </div>
                                 <AppRadioInput
                                     name="deliveryMethod"
@@ -107,11 +156,13 @@ function CheckoutPage() {
                     </RadioGroup.Option>
                     <RadioGroup.Option value="16" className={"w-full cursor-pointer"}>
                         {({checked}) => (
-                            <div className={`w-full relative p-5 flex flex-col gap-5 rounded-lg border border-neutral-200 ${checked ? 'outline outline-2 outline-primary' : ''}`}>
+                            <div
+                                className={`w-full relative p-5 flex flex-col gap-5 rounded-lg border border-neutral-200 ${checked ? 'outline outline-2 outline-primary' : ''}`}>
                                 <div className={"relative"}>
                                     <h3 className={"font-bold mb-1"}>Express</h3>
                                     <p className={"text-neutral-600"}>2–5 business days</p>
-                                    {checked && <TiTick size={18} className={"absolute top-0 right-0 text-white bg-primary rounded-full p-0.5"}/>}
+                                    {checked && <TiTick size={18}
+                                                        className={"absolute top-0 right-0 text-white bg-primary rounded-full p-0.5"}/>}
                                 </div>
                                 <AppRadioInput
                                     name="deliveryMethod"
@@ -129,7 +180,7 @@ function CheckoutPage() {
                 <div className={"flex justify-between sm:flex-row flex-col"}>
                     {paymentOptions.map((option, index) => (
                         <div key={index}>
-                            <AppRadioInput 
+                            <AppRadioInput
                                 className={"h-4 w-4 border-gray-300 text-primary focus:ring-indigo-500"}
                                 name={"payment"}
                                 control={control}
@@ -140,11 +191,29 @@ function CheckoutPage() {
                         </div>
                     ))}
                 </div>
-                <AppTextInput control={control} name={"cardNumber"} label={"Card Number"} className={inputStyle}/>
                 <AppTextInput control={control} name={"nameOnCard"} label={"Name on Card"} className={inputStyle}/>
+                <StripeInput
+                    onChange={onCardInputChange}
+                    className={inputStyle}
+                    error={!!cardState.elementError.cardNumber}
+                    helperText={cardState.elementError.cardNumber}
+                    component={CardNumberElement}
+                />
                 <div className={"flex gap-4"}>
-                    <AppTextInput control={control} name={"expire"} label={"Expiration Date (MM/YY)"} className={`${inputStyle} basis-8/12`}/>
-                    <AppTextInput control={control} name={"cvc"} label={"CVC"} className={`${inputStyle} basis-4/12`}/>
+                    <StripeInput
+                        onChange={onCardInputChange}
+                        className={`${inputStyle}`}
+                        error={!!cardState.elementError.cardExpiry}
+                        helperText={cardState.elementError.cardExpiry}
+                        component={CardExpiryElement}
+                    />
+                    <StripeInput
+                        onChange={onCardInputChange}
+                        className={`${inputStyle}`}
+                        error={!!cardState.elementError.cardCvc}
+                        helperText={cardState.elementError.cardCvc}
+                        component={CardCvcElement}
+                    />
                 </div>
             </div>
             <div className={"w-full flex flex-col gap-y-10 bg-[#F9FAFB] sm:px-16 px-10 py-20"}>
@@ -175,10 +244,11 @@ function CheckoutPage() {
                                                     </div>
                                                 </div>
                                                 <div className={"flex items-center justify-between text-sm"}>
-                                                    <span className={"flex items-center"}>
+                                                    <span className={"flex items-center"}>  
                                                         <TiTick size={20} className={"text-green-500 mr-2"}/> In Stock
                                                     </span>
-                                                    <span className={"font-bold"}>{currencyFormat(item.price * item.quantity)}</span>
+                                                    <span
+                                                        className={"font-bold"}>{currencyFormat(item.price * item.quantity)}</span>
                                                 </div>
                                             </div>
                                         </li>
@@ -186,11 +256,12 @@ function CheckoutPage() {
                                     </div>
                                 ))}
                             </ul>
-                            <BasketSummary basket={basket} isBasket={false} className={"bg-white border border-neutral-100"}/>
+                            <BasketSummary basket={basket} isBasket={false}
+                                           className={"bg-white border border-neutral-100"}/>
                             <LoadingButton
-                                isLoading={isCreateOrderLoading}    
-                                type={"submit"} 
-                                disabled={!isValid}
+                                isLoading={loading}
+                                type={"submit"}
+                                disabled={submitDisabled()}
                                 className={"bg-primary block text-center text-base text-white w-full py-3 rounded disabled:opacity-50"}
                             >
                                 Place Order
